@@ -23,6 +23,7 @@
     "@electron/fuses": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-vue": "^5.0.4",
     "electron": "30.0.3",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
@@ -38,6 +39,7 @@
   "license": "MIT",
   "dependencies": {
     "@electron-forge/shared-types": "^7.4.0",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "vue": "^3.4.27"
   }
 }
