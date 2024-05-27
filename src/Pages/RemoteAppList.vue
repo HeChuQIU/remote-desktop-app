@@ -8,6 +8,7 @@ let connection = new HubConnectionBuilder().withUrl("http://localhost:5000/remot
 let items = ref([]);
 let loaded = ref(false);
 let selectedAppName = ref("");
+let address = ref("");
 
 onMounted(async () => {
 
@@ -26,17 +27,24 @@ const onLoadButtonClick = async () => {
   });
 };
 
-const rdpToApp = async () =>{
+const rdpToApp = async () => {
   try {
-    const result = await window.electronAPI.executeCommand(`echo ${selectedAppName.value}`);
+    const result = await window.electronAPI.executeCommand(`xfreerdp /v:HeChu-Desktop /app:"${selectedAppName}"`);
     console.log(result);
   } catch (error) {
     console.error(`错误: ${error}`);
   }
 }
+
 </script>
 
 <template>
+  <!--  <v-card-->
+  <!--      class="mx-auto"-->
+  <!--      max-width="300"-->
+  <!--  >-->
+  <!--    <v-text-field v-model="address" label="地址"></v-text-field>-->
+  <!--  </v-card>-->
   <v-card
       class="mx-auto"
       max-width="300"
@@ -47,7 +55,7 @@ const rdpToApp = async () =>{
     </v-btn>
     <v-list :items="items" @click:select="value => selectedAppName = items[value.id].title"></v-list>
   </v-card>
-  <v-btn @click="rdpToApp" :disabled="selectedAppName.length == 0">
+  <v-btn @click="rdpToApp">
     连接 {{ selectedAppName }}
   </v-btn>
 </template>
