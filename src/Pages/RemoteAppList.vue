@@ -15,7 +15,8 @@ onMounted(async () => {
 });
 
 const onLoadButtonClick = async () => {
-  if (connection.state !== HubConnectionState.Connected)
+  console.log(`Connection state: ${connection.state}`)
+  if (connection.state == HubConnectionState.Disconnected)
     await connection.start();
   connection.invoke("GetRemoteApps").then(function (apps: string[]) {
     console.log(apps);
@@ -29,7 +30,7 @@ const onLoadButtonClick = async () => {
 
 const rdpToApp = async () => {
   try {
-    const result = await window.electronAPI.executeCommand(`xfreerdp /v:HeChu-Desktop /app:"${selectedAppName}"`);
+    const result = await window.electronAPI.executeCommand(`xfreerdp /v:"hostname" /app:"${selectedAppName.value} /d:" /u:"user" /p:"password"`);
     console.log(result);
   } catch (error) {
     console.error(`错误: ${error}`);
