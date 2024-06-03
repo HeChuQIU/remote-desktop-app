@@ -4,8 +4,9 @@ import {HubConnectionBuilder, HubConnectionState} from "@microsoft/signalr";
 // import { ipcRenderer } from 'electron';
 
 
-let connection = new HubConnectionBuilder().withUrl("http://localhost:5000/remoteAppHub").build();
+let connection = new HubConnectionBuilder().withUrl("http://localhost:5000/clientHub").build();
 let items = ref([]);
+let itemsIcon = ref([]);
 let loaded = ref(false);
 let selectedAppName = ref("");
 let address = ref("");
@@ -16,13 +17,19 @@ onMounted(async () => {
 
 const onLoadButtonClick = async () => {
   console.log(`Connection state: ${connection.state}`)
+  items.value = [];
+  itemsIcon.value = [];
   if (connection.state == HubConnectionState.Disconnected)
     await connection.start();
-  connection.invoke("GetRemoteApps").then(function (apps: string[]) {
-    console.log(apps);
-    items.value = apps.map((app, i) => ({title: app, value: i}));
+  Promise.all([
+    connection.invoke("GetRemoteApplicationNames"),
+    connection.invoke("GetIconBase64OfRemoteApplications")
+  ]).then(([appNames, appIcons]) => {
+    console.log(appNames, appIcons);
+    items.value = appNames;
+    itemsIcon.value = appIcons;
     loaded.value = true;
-  }).catch(function (err) {
+  }).catch(err => {
     console.error(err.toString());
     loaded.value = false;
   });
@@ -54,7 +61,21 @@ const rdpToApp = async () => {
       <div v-if="loaded">重新加载</div>
       <div v-else>点击加载</div>
     </v-btn>
-    <v-list :items="items" @click:select="value => selectedAppName = items[value.id].title"></v-list>
+    <v-list @click:select="value => selectedAppName = value.id">
+      <v-list-item
+          v-for="(item, i) in items"
+          :key="i"
+          :value="item"
+          color="primary"
+          rounded="shaped"
+      >
+        <template v-slot:prepend>
+          <v-img :width="32" :src="`data:image/png;base64,${itemsIcon[i]}`"/>
+        </template>
+
+        <v-list-item-title v-text="item"></v-list-item-title>
+      </v-list-item>
+    </v-list>
   </v-card>
   <v-btn @click="rdpToApp">
     连接 {{ selectedAppName }}
